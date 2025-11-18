@@ -1,6 +1,5 @@
 from database.DB_connect import DBConnect
 from model.tour import Tour
-
 class TourDAO:
 
     @staticmethod
@@ -16,7 +15,7 @@ class TourDAO:
             return None
 
         cursor = cnx.cursor(dictionary=True)
-        query = """ ADD YOUR QUERY """ # TODO
+        query = """ SELECT DISTINCT * FROM tour """
         try:
             cursor.execute(query)
             for row in cursor:

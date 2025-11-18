@@ -20,7 +20,6 @@ class DBConnect:
         """
         Metodo factory per ottenere una connessione dal pool.
         Inizializza il pool se non esiste ancora.
-
         :param nome_pool: nome del pool
         :param dimensione_pool: numero di connessioni nel pool
         :return: mysql.connector.connection oppure None in caso di errore di connessione

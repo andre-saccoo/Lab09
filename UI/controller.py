@@ -2,7 +2,6 @@ import flet as ft
 from UI.view import View
 from model.model import Model
 
-
 class Controller:
     def __init__(self, view: View, model: Model):
         self._model = model
@@ -20,15 +19,12 @@ class Controller:
     def popola_dropdown_regione(self):
         """Popola il menu a tendina delle regioni."""
         self._view.dd_regione.options.clear()
-
         regioni = self._model.load_regioni() # Ogni regione (id, nome_regione)
-
         if regioni:
             for regione in sorted(regioni):
                 self._view.dd_regione.options.append(ft.dropdown.Option(key=regione.id,text=regione.nome))
         else:
             self._view.show_alert("Errore nel caricamento delle regioni.")
-
         self._view.update()
 
     def check_giorni(self, e):
