@@ -33,7 +33,6 @@ class TourDAO:
         finally:
             cursor.close()
             cnx.close()
-
         return result
 
     @staticmethod
@@ -63,5 +62,4 @@ class TourDAO:
         finally:
             cursor.close()
             cnx.close()
-
         return result
