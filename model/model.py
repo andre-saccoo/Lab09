@@ -1,4 +1,4 @@
-from database import tour_DAO
+import copy
 from database.regione_DAO import RegioneDAO
 from database.tour_DAO import TourDAO
 from database.attrazione_DAO import AttrazioneDAO
@@ -13,7 +13,9 @@ class Model:
         self._costo = 0
 
         # TODO: Aggiungere eventuali altri attributi
-        #self._relazioni=[]
+
+
+
         # Caricamento
         self.load_tour()
         self.load_attrazioni()
@@ -32,7 +34,7 @@ class Model:
         """ Carica tutte le attrazioni in un dizionario [id, Attrazione]"""
         self.attrazioni_map = AttrazioneDAO.get_attrazioni()
 
-    #verificare  che id tour sia presente in tutte le relazioni
+    #verificare che id tour sia presente in tutte le relazioni
     def load_relazioni(self):
         """
             Interroga il database per ottenere tutte le relazioni fra tour e attrazioni e salvarle nelle strutture dati
@@ -41,10 +43,10 @@ class Model:
             --> Ogni Attrazione ha un set di Tour.
         """
         self._relazioni = TourDAO.get_tour_attrazioni
-        for relazione in self._relazioni:
+        #for relazione in self._relazioni:
 
 
-        for relazione in self._relazioni:
+        #for relazione in self._relazioni:
 
 
         # TODO
