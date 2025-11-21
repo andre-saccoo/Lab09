@@ -14,8 +14,6 @@ class Model:
 
         # TODO: Aggiungere eventuali altri attributi
 
-
-
         # Caricamento
         self.load_tour()
         self.load_attrazioni()
@@ -28,8 +26,9 @@ class Model:
 
     def load_tour(self):
         """ Carica tutti i tour in un dizionario [id, Tour]"""
-        self.tour_map = TourDAO.get_tour() #restituisce la lista dei tour e delle attrazioni
+        self.tour_map = TourDAO.get_tour() #restituisce un dizionario dei tour e delle attrazioni
         #sotto fai un ciclo anni dato dove verifichi che se l'id attrazioni è presente in entrambi
+
     def load_attrazioni(self):
         """ Carica tutte le attrazioni in un dizionario [id, Attrazione]"""
         self.attrazioni_map = AttrazioneDAO.get_attrazioni()
@@ -42,14 +41,24 @@ class Model:
             --> Ogni Tour ha un set di Attrazione.
             --> Ogni Attrazione ha un set di Tour.
         """
-        self._relazioni = TourDAO.get_tour_attrazioni
-        #for relazione in self._relazioni:
+        # relazioni è una lista di tuple con id tour / id attrazioni
+        # per ogni oggetto tour creiamo un insieme di attrazioni a esso associato
+        self.relazioni = TourDAO.get_tour_attrazioni
 
+        for relazione in self.relazioni: # per ogni relazione nella tabella che lega le due con relazione N N
+            for tour in self.tour_map:      # per ogni oggetto tour nella lista di oggetti
+                if relazione["id_tour"] == tour.id: #dizionario con come chiave l'id
+                    for attrazione in self.attrazioni_map:
+                        if attrazione.id == relazione["id_attrazioni"]:
+                            tour.attrazioni.add(attrazione) #aggiungo all'insieme presente nell'oggetto tour
 
-        #for relazione in self._relazioni:
+        for relazione in self.relazioni:
+            for attrazione in self.attrazioni_map:
+                if relazione["id_attrazione"] == attrazione.id:
+                    for tour in self.tour_map:
+                        if tour.id == relazione["id_tour"]:
+                            attrazione.tour.add(attrazione)
 
-
-        # TODO
 
     def genera_pacchetto(self, id_regione: str, max_giorni: int = None, max_budget: float = None):
         """
