@@ -26,7 +26,7 @@ class Model:
 
     def load_tour(self):
         """ Carica tutti i tour in un dizionario [id, Tour]"""
-        self.tour_map = TourDAO.get_tour() #restituisce un dizionario dei tour e delle attrazioni
+        self.tour_map = TourDAO.get_tour() #restituisce un dizionario di oggetti tour e delle attrazioni
         #sotto fai un ciclo anni dato dove verifichi che se l'id attrazioni è presente in entrambi
 
     def load_attrazioni(self):
@@ -34,31 +34,36 @@ class Model:
         self.attrazioni_map = AttrazioneDAO.get_attrazioni()
 
     #verificare che id tour sia presente in tutte le relazioni
+    """
+    Interroga il database per ottenere tutte le relazioni fra tour e attrazioni e salvarle nelle strutture dati
+    Collega tour <-> attrazioni.
+    --> Ogni Tour ha un set di Attrazione.
+    --> Ogni Attrazione ha un set di Tour.
+    # relazioni è una lista di tuple con id tour / id attrazioni
+    # per ogni oggetto tour creiamo un insieme di attrazioni a esso associato
+    """
+
     def load_relazioni(self):
-        """
-            Interroga il database per ottenere tutte le relazioni fra tour e attrazioni e salvarle nelle strutture dati
-            Collega tour <-> attrazioni.
-            --> Ogni Tour ha un set di Attrazione.
-            --> Ogni Attrazione ha un set di Tour.
-        """
-        # relazioni è una lista di tuple con id tour / id attrazioni
-        # per ogni oggetto tour creiamo un insieme di attrazioni a esso associato
-        self.relazioni = TourDAO.get_tour_attrazioni
 
-        for relazione in self.relazioni: # per ogni relazione nella tabella che lega le due con relazione N N
-            for tour in self.tour_map:      # per ogni oggetto tour nella lista di oggetti
-                if relazione["id_tour"] == tour.id: #dizionario con come chiave l'id
-                    for attrazione in self.attrazioni_map:
-                        if attrazione.id == relazione["id_attrazioni"]:
-                            tour.attrazioni.add(attrazione) #aggiungo all'insieme presente nell'oggetto tour
+        """
+        Interroga il database per ottenere tutte le relazioni fra tour e attrazioni e salvarle nelle strutture dati
+        Collega tour <-> attrazioni.
+        --> Ogni Tour ha un set di Attrazione.
+        --> Ogni Attrazione ha un set di Tour.
 
+        estraggo gli id dalla tabella relazione, così ogni tour avrà l'insieme delle attrazioni a cui è legato
+        e ogni attrazione avrà i tour, itero sulle coppie della tabella relazione, estraendo i due id, e a vicenda li
+        aggiungo all'insieme dell'altro se non è presente, creo momentaneamente una copia dell'oggetto
+        per poter aggiungere agli insiemi gli id"""
+        self.relazioni = TourDAO.get_tour_attrazioni()
         for relazione in self.relazioni:
-            for attrazione in self.attrazioni_map:
-                if relazione["id_attrazione"] == attrazione.id:
-                    for tour in self.tour_map:
-                        if tour.id == relazione["id_tour"]:
-                            attrazione.tour.add(attrazione)
-
+            id_tour=relazione["id_tour"]
+            id_attrazione= relazione["id_attrazione"]
+            tour=self.tour_map.get(id_tour)
+            attrazione=self.attrazioni_map.get(id_attrazione)
+            if tour is not None and attrazione is not None:
+                tour.attrazioni.add(attrazione)
+                attrazione.tour.add(tour)
 
     def genera_pacchetto(self, id_regione: str, max_giorni: int = None, max_budget: float = None):
         """
@@ -75,11 +80,20 @@ class Model:
         self._costo = 0
         self._valore_ottimo = -1
 
-        # TODO
+        #filtriamo i tour per id regione
+        lista_oggetti_tour_per_regione =[]
+        for tour in self.tour_map.values():
+            if str(tour.id_regione) == id_regione:
+                lista_oggetti_tour_per_regione.append(tour)
+        for oggetto in lista_oggetti_tour_per_regione:
+            print(oggetto.nome, oggetto.id_regione)
+
+        self._ricorsione(0,lista_oggetti_tour_per_regione,0,self._costo,self._valore_ottimo)
 
         return self._pacchetto_ottimo, self._costo, self._valore_ottimo
 
     def _ricorsione(self, start_index: int, pacchetto_parziale: list, durata_corrente: int, costo_corrente: float, valore_corrente: int, attrazioni_usate: set):
         """ Algoritmo di ricorsione che deve trovare il pacchetto che massimizza il valore culturale"""
+
 
         # TODO: è possibile cambiare i parametri formali della funzione se ritenuto opportuno
